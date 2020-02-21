@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const users = require('./routes/users');
+const auth = require('./routes/auth');
 const formData = require("express-form-data");
 const formDataOptions = require('./config/form-data');
 
@@ -10,7 +10,7 @@ app.use(formData.format());
 app.use(formData.stream());
 app.use(formData.union());
 
-app.use('/', users);
+app.use('/', auth);
 
 app.listen(3000, () => {
     console.log('Server is up and running on port numner ' + 3000);
