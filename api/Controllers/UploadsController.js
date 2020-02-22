@@ -34,6 +34,9 @@ module.exports = {
     		transitionDuration: 1,
     		videoBitrate: 1024,
     		videoCodec: "libx264",
+            audioBitrate: '128k',
+            audioChannels: 2,
+            audioCodec:'libmp3lame',
     		size: "640x?",
     		format: "mp4",
     		subtitleStyles: {
@@ -58,7 +61,9 @@ module.exports = {
     	const images = req.body.images;
     	var path = publicPath + '/media/videos/';
 
-    	videoshow(images, options).save(path + Date.now() + "-video.mp4")
+    	videoshow(images, options)
+        .audio(req.body.audio)
+        .save(path + Date.now() + "-video.mp4")
     	.on('start', function (command) {
     		console.log('ffmpeg process started:', command);
     	})
