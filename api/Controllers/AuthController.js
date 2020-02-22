@@ -9,10 +9,10 @@ function sendJsonResponse(data)
 	const transformation = {
 		mapping : {
 			item : {
-				Id:'id',
-				Username:'name',
-				EmailAddress:'email',
-				Token:'token'
+				id:'id',
+				username:'name',
+				email:'email',
+				token:'token'
 			}
 		}
 	}
@@ -50,8 +50,10 @@ module.exports = {
 					};
 
 					db.query(User.getUserById(result.insertId), (err, user) => {
+						transformData = sendJsonResponse(user);
 						res.status(201).json({
-							'message': 'User Created Successfully!'
+							'message': 'User Created Successfully!',
+							'data': transformData
 						});
 					});
 				});
@@ -78,9 +80,9 @@ module.exports = {
 				});
 
 			} else {
-				var user = results[0];
+				let user = results[0];
 				if(bcrypt.compareSync(userData.password, user.password)) {
-					var token = jwt.sign({ user: user }, 'secret', { expiresIn: '1h' });
+					let token = jwt.sign({ user: user }, 'secret', { expiresIn: '1h' });
 
 					user.token = 'Bearer ' + token;
 					transformData = sendJsonResponse(user);
@@ -90,12 +92,27 @@ module.exports = {
 					});
 				} else {
 					res.status(401).json({
-						'errors': {
-							message: 'Authentication Fails!',
-						}
+						'errors': {message: 'Authentication Fails!'}
 					});
 				}
 			}
 		});
+	},
+
+	profile: (req, res) => {
+		let token = req.headers.authorization;
+		if(!token) {
+			res.status(401).json({'error': 'Authenticate error!'});
+
+		} else {
+
+			let $token = token.replace("Bearer ","");
+			let decoded = jwt.verify($token, 'secret');
+
+			transformData = sendJsonResponse(decoded.user);
+			res.status(200).json({
+				'data': transformData
+			});
+		}
 	}
 };
