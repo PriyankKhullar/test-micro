@@ -3,6 +3,7 @@ const router = express.Router();
 const UploadsController = require('../api/Controllers/UploadsController');
 
 // uploads
+router.post('/image', UploadsController.image);
 router.post('/video', UploadsController.video);
 
 module.exports = router;

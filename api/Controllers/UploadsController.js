@@ -1,8 +1,31 @@
+const Jimp = require('jimp');
 const videoshow = require('videoshow');
 const path = require('path');
 const publicPath = path.join(__dirname, '../../public');
 
 module.exports = {
+
+    image: (req, res) => {
+        Jimp.read(req.body.image).then(image => {
+            Jimp.loadFont(Jimp.FONT_SANS_8_BLACK).then(font => {
+                image
+                .resize(256, 256) // resize
+                .quality(60)
+                .print(font, 10, 10, "Hello World!", 10)
+                .write(publicPath + '/media/images/' + Date.now() + "-image.jpg");
+            });
+
+            res.status(201).json({
+                'message': 'Image uploaded successfully!',
+            });
+        })
+        .catch(err => {
+            res.status(400).json({
+                'error': true,
+                'message': err
+            });
+        });
+    },
 
     video: (req, res) => {
     	const options = {
