@@ -1,7 +1,6 @@
 const videoshow = require('videoshow');
 const path = require('path');
 const publicPath = path.join(__dirname, '../../public');
-const random = Math.floor(Math.random()* 100);
 
 module.exports = {
 
@@ -36,7 +35,7 @@ module.exports = {
     	const images = req.body.images;
     	var path = publicPath + '/media/videos/';
 
-    	videoshow(images, options).save(path + random + "-video.mp4")
+    	videoshow(images, options).save(path + Date.now() + "-video.mp4")
     	.on('start', function (command) {
     		console.log('ffmpeg process started:', command);
     	})
