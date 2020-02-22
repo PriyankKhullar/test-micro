@@ -12,7 +12,7 @@ class User {
    }
 
    updateUser(id) {
-      return `UPDATE users SET name = '${this.name}', email = '${this.email}', password = '${this.password}' WHERE id = ${id}`;
+      return `UPDATE users SET name = '${this.name}', email = '${this.email}' WHERE id = ${id}`;
    }
 
    static getUserById(id) {
