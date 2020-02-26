@@ -6,12 +6,15 @@ const publicPath = path.join(__dirname, '../../public');
 module.exports = {
 
     image: (req, res) => {
-        Jimp.read(req.body.image).then(image => {
-            Jimp.loadFont(Jimp.FONT_SANS_8_BLACK).then(font => {
+        params = req.body;
+
+        Jimp.read(params.image).then(image => {
+            Jimp.loadFont(Jimp.FONT_SANS_128_BLACK).then(font => {
                 image
-                .resize(256, 256) // resize
+                .resize(Number(params.height), Number(params.width)) // resize
                 .quality(60)
-                .print(font, 10, 10, "Hello World!", 10)
+                .print(font, Number(params.text_align_horizontal), Number(params.text_align_vertical),
+                    params.text, Number(params.max_width))
                 .write(publicPath + '/media/images/' + Date.now() + "-image.jpg");
             });
 
