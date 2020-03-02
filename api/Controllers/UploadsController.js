@@ -2,14 +2,15 @@ const Jimp = require('jimp');
 const videoshow = require('videoshow');
 const path = require('path');
 const publicPath = path.join(__dirname, '../../public');
+const { registerFont, createCanvas, loadImage } = require('canvas');
+const fs = require('fs');
 
 module.exports = {
-
     image: (req, res) => {
         params = req.body;
 
         Jimp.read(params.image).then(image => {
-            Jimp.loadFont(Jimp.FONT_SANS_128_BLACK).then(font => {
+            Jimp.loadFont(Jimp.FONT_SANS_32_BLACK).then(font => {
                 image
                 .resize(Number(params.height), Number(params.width)) // resize
                 .quality(60)
@@ -83,5 +84,37 @@ module.exports = {
                 'path': output
             });
     	});
+    },
+
+    dynamicTextImage: (req, res) => {
+
+        const canvas = createCanvas(500, 500)
+        const ctx = canvas.getContext('2d')
+
+        registerFont(publicPath + '/media/fonts/FjallaOne-Regular.ttf', { family: 'Fjalla One' })
+
+        // Draw cat with lime helmet
+        loadImage(req.body.image).then((image) => {
+            ctx.drawImage(image, 0, 0)
+            ctx.fillStyle = 'rgba(0,0,0,0)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = '30px "Fjalla One"';
+            ctx.fillStyle = "white";
+            ctx.rotate(-0.2);
+            ctx.fillText("THIS IS A LONG LONG TITLE", 10, 90);
+
+            let path = publicPath + '/media/images/' + Date.now() + "-img.JPEG";
+            const out = fs.createWriteStream(path);
+            const stream = canvas.createJPEGStream();
+            stream.pipe(out);
+            out.on('finish', () =>  res.send('The JPEG file was created.'));
+        })
+        .catch(err => {
+            res.status(400).json({
+                'error': true,
+                'message': err
+            });
+        });
     }
 }
