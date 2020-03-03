@@ -6,5 +6,6 @@ const UploadsController = require('../api/Controllers/UploadsController');
 router.post('/image', UploadsController.image);
 router.post('/dynamic-image', UploadsController.dynamicTextImage);
 router.post('/video', UploadsController.video);
+router.post('/merge-video', UploadsController.mergeVideos);
 
 module.exports = router;

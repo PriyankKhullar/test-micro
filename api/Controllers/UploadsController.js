@@ -4,6 +4,7 @@ const path = require('path');
 const publicPath = path.join(__dirname, '../../public');
 const { registerFont, createCanvas, loadImage } = require('canvas');
 const fs = require('fs');
+const concat = require('ffmpeg-concat');
 
 module.exports = {
     image: (req, res) => {
@@ -116,5 +117,28 @@ module.exports = {
                 'message': err
             });
         });
+    },
+
+    mergeVideos: (req, res) => {
+
+        concat({
+            output: 'test.mp4',
+            videos: [
+                'https://storage.googleapis.com/facebook-dev-b3b9/dev/jTqb1158281209015wHb.mp4',
+                'https://storage.googleapis.com/facebook-dev-b3b9/dev/jTqb1158281209015wHb.mp4',
+                'https://storage.googleapis.com/facebook-dev-b3b9/dev/jTqb1158281209015wHb.mp4'
+            ],
+            transitions: [
+                {
+                    name: 'circleOpen',
+                    duration: 1000
+                },
+                {
+                    name: 'crossWarp',
+                    duration: 800
+                }
+            ]
+        });
+
     }
 }

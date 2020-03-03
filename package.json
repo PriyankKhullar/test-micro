@@ -16,6 +16,7 @@
     "canvas": "^2.6.1",
     "express": "^4.17.1",
     "express-form-data": "^2.0.11",
+    "ffmpeg-concat": "^1.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "jimp": "^0.9.3",
     "json-transformer-node": "^1.0.6",
