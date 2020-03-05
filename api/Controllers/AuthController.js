@@ -109,10 +109,10 @@ module.exports = {
 			let $token = token.replace("Bearer ","");
 			let decoded = jwt.verify($token, 'secret');
 
-			transformData = sendJsonResponse(decoded.user);
-			res.status(200).json({
+			return transformData = sendJsonResponse(decoded.user);
+			/*res.status(200).json({
 				'data': transformData
-			});
+			});*/
 		}
 	},
 
