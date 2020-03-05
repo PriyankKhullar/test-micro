@@ -24,7 +24,13 @@ function createImage(params, distinations) {
         ctx.rotate(0.1);
         ctx.fillText(params.text, 150, 50);
 
-        const out = fs.createWriteStream(distinations + '/' + params.order + '-' + Date.now() + "-img.JPEG");
+        let uploadedPath = distinations + '/images';
+
+        if (!fs.existsSync(uploadedPath)){
+            fs.mkdirSync(uploadedPath);
+        }
+
+        const out = fs.createWriteStream(uploadedPath + '/' + params.order + '-' + Date.now() + "-img.JPEG");
         const stream = canvas.createJPEGStream();
         stream.pipe(out);
         out.on('finish', () =>  console.log('The JPEG file was created.'));
@@ -224,7 +230,7 @@ module.exports = {
         let profile = AuthController.profile(req, res);
 
         let folderName = Date.now() + profile.id + Math.floor(Math.random() * 1000);
-        let uploadedPath = publicPath + '/media/images/' + folderName;
+        let uploadedPath = publicPath + '/media/' + folderName;
         let distinations = uploadedPath;
 
         if (!fs.existsSync(distinations)){
@@ -240,12 +246,11 @@ module.exports = {
 
     convertImgToMp4: (req, res) => {
 
-        let imgFolder = req.body.folder_name;
-        let directoryPath = publicPath + '/media/images/' + imgFolder;
+        let folderName = req.body.folder_name;
+        let directoryPath = publicPath + '/media/' + folderName + '/images';
         let profile = AuthController.profile(req, res);
 
-        let folderName = Date.now() + profile.id + Math.floor(Math.random() * 1000);
-        let uploadedPath = publicPath + '/media/videos/' + folderName;
+        let uploadedPath = publicPath + '/media/' + folderName + '/videos';
         let distinations = uploadedPath;
 
         if (!fs.existsSync(distinations)){
@@ -260,7 +265,7 @@ module.exports = {
             }
 
             files.forEach((file, index) => {
-                imgPath = [publicPath + '/media/images/'+ imgFolder + '/' + file];
+                imgPath = [publicPath + '/media/'+ folderName + '/images/' + file];
                 createVideo(imgPath, distinations, index);
             })
 
@@ -271,9 +276,7 @@ module.exports = {
     mergeVideos: (req, res) => {
 
         let folderName = req.body.folder_name;
-
-
-        let directoryPath = publicPath + '/media/videos/' + folderName;
+        let directoryPath = publicPath + '/media/' + folderName + '/videos/';
 
         fs.readdir(directoryPath, (err, files) => {
             if (err) {
@@ -284,19 +287,24 @@ module.exports = {
             let transitionsEffect = getTransitionsEffects(videos.length);
 
             concat({
-                output: publicPath + '/media/videos/' + folderName + '/' + folderName + '.mp4',
+                output: publicPath + '/media/' + folderName + '/video.mp4',
                 videos: videos,
                 transitions: transitionsEffect
             });
         });
+
+        res.send('Merging videos in ' + directoryPath);
     },
 
     addAudioInVideo : (req, res) => {
+        let folderName = req.body.folder_name;
+        let directoryPath = publicPath + '/media/' + folderName;
+
         ffmpeg()
-          .input('https://storage.googleapis.com/facebook-dev-b3b9/dev/YSHhv1583248817SkY23.mp4')
+          .input(directoryPath + '/video.mp4')
           .input('https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3')
           .audioCodec('libmp3lame')
-          .save('demo.mp4')
+          .save(directoryPath + '/' + folderName + '.mp4')
     }
 
 }
